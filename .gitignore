@@ -1,0 +1,62 @@
+# Build output
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+[Pp]ublish/
+*.dll
+*.exe
+*.pdb
+
+# NuGet
+*.nupkg
+*.snupkg
+**/packages/*
+!**/packages/build/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# User-specific Visual Studio / Rider files
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# Test results and coverage
+TestResults/
+[Tt]est[Rr]esult*/
+*.trx
+*.coverage
+*.coveragexml
+coverage*/
+coverage.cobertura.xml
+
+# Logs
+*.log
+logs/
+
+# Local settings and secrets (keep appsettings.json committed)
+appsettings.*.local.json
+appsettings.Local.json
+*.env
+.env
+.env.*
+!.env.example
+secrets.json
+*.pfx
+*.p12
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+~$*
+.DS_Store
+Thumbs.db
