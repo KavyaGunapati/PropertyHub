@@ -1,9 +1,11 @@
 <Solution>
   <Folder Name="/src/">
-    <Project Path="src/PropertyHub.Api/PropertyHub.Api.csproj" />
-    <Project Path="src/PropertyHub.Application/PropertyHub.Application.csproj" />
-    <Project Path="src/PropertyHub.Domain/PropertyHub.Domain.csproj" />
-    <Project Path="src/PropertyHub.Infrastructure/PropertyHub.Infrastructure.csproj" />
+    <Project Path="src/PropertyHub.DataAccess/PropertyHub.DataAccess.csproj" />
+    <Project Path="src/PropertyHub.Interfaces/PropertyHub.Interfaces.csproj" />
+    <Project Path="src/PropertyHub.Managers/PropertyHub.Managers.csproj" />
+    <Project Path="src/PropertyHub.Models/PropertyHub.Models.csproj" />
+    <Project Path="src/PropertyHub.Services/PropertyHub.Services.csproj" />
+    <Project Path="src/PropertyHub.WebAPI/PropertyHub.WebAPI.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/PropertyHub.IntegrationTests/PropertyHub.IntegrationTests.csproj" />

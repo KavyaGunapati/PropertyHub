@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PropertyHub.DataAccess\PropertyHub.DataAccess.csproj" />
+    <ProjectReference Include="..\PropertyHub.Interfaces\PropertyHub.Interfaces.csproj" />
+    <ProjectReference Include="..\PropertyHub.Models\PropertyHub.Models.csproj" />
+  </ItemGroup>
+
+</Project>
