@@ -9,7 +9,7 @@ public class RefreshToken
     public DateTime CreatedAt { get; set; }
     public DateTime ExpiresAt { get; set; }
     public DateTime? RevokedAt { get; set; }
-    public string RevokeReason { get; set; }
+    public string? RevokeReason { get; set; }
     
     public User User { get; set; }
     

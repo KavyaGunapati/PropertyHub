@@ -1,5 +1,5 @@
 namespace PropertyHub.Services;
-using FluentValidation;
+using PropertyHub.DataAccess.Entities;
 using PropertyHub.Interfaces.IManager;
 using PropertyHub.Interfaces.IService;
 using PropertyHub.Models.DTOs;
@@ -7,22 +7,22 @@ using PropertyHub.Models.DTOs;
 public class AppUserService : IAppUserService
 {
     private readonly IAppUserManager _manager;
-    private readonly IValidator<RegisterRequest> _registerValidator;
 
-    public AppUserService(IAppUserManager manager, IValidator<RegisterRequest> registerValidator)
+    public AppUserService(IAppUserManager manager)
     {
         _manager = manager;
-        _registerValidator = registerValidator;
     }
 
-    public async Task<Result<RegisterResponse>> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)
-    {
-        var validation = await _registerValidator.ValidateAsync(request, cancellationToken);
-        if (!validation.IsValid)
-        {
-            return Result<RegisterResponse>.Failure(string.Join(" ", validation.Errors.Select(e => e.ErrorMessage)));
-        }
+    public Task<Result<RegisterResponse>> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)
+        => _manager.RegisterAsync(request, cancellationToken);
 
-        return await _manager.RegisterAsync(request, cancellationToken);
-    }
+    public Task<Result<LoginResponse>> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default)
+        => _manager.LoginAsync(request, cancellationToken);
+    public Task<Result<RefreshTokenResponse>> RefreshTokenAsync(RefreshTokenRequest refreshTokenRequest, CancellationToken cancellationToken = default)
+        => _manager.RefreshTokenAsync(refreshTokenRequest, cancellationToken);
+    public Task<Result<string>> LogoutAsync(string token, CancellationToken cancellationToken = default)
+        => _manager.LogoutAsync(token, cancellationToken);
+
+    public Task<User?> GetUserByEmailAsync(string email, CancellationToken cancellationToken = default)
+        => _manager.GetUserByEmailAsync(email, cancellationToken);
 }

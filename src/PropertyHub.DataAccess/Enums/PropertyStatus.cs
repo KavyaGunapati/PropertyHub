@@ -4,7 +4,6 @@ public enum PropertyStatus
 {
     Draft = 0,
     Published = 1,
-    Sold = 2,
-    Rented = 3,
-    Archived = 4
+    Sold = 2, 
+    Deleted = 3
 }

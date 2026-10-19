@@ -25,4 +25,31 @@ public class AuthController : ControllerBase
 
         return Ok(new { message = "Registration successful", data = result.Data });
     }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _userService.LoginAsync(request, cancellationToken);
+
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.Error });
+
+        return Ok(new { message = "Login successful", data = result.Data });
+    }
+    [HttpPost("refresh-token")]
+    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _userService.RefreshTokenAsync(request, cancellationToken);
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.Error });
+        return Ok(new { message = "Token refreshed successfully", data = result.Data });
+    }
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout(string token, CancellationToken cancellationToken)
+    {
+        var result = await _userService.LogoutAsync(token, cancellationToken);
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.Error });
+        return Ok(new { message = "Logged out successfully", data = result.Data });
+    }
 }

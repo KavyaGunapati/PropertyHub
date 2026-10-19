@@ -9,5 +9,4 @@
   <ItemGroup>
     <ProjectReference Include="..\PropertyHub.DataAccess\PropertyHub.DataAccess.csproj" />
   </ItemGroup>
-
 </Project>

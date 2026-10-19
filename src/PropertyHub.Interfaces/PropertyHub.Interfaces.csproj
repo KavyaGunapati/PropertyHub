@@ -5,9 +5,13 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+<ItemGroup>
+  <FrameworkReference Include="Microsoft.AspNetCore.App" />
+</ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\PropertyHub.Models\PropertyHub.Models.csproj" />
+    
   </ItemGroup>
 
 </Project>

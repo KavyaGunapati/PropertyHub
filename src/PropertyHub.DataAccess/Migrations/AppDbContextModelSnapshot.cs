@@ -154,6 +154,33 @@ namespace PropertyHub.DataAccess.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("PropertyHub.DataAccess.Entities.Favorite", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("PropertyId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PropertyId");
+
+                    b.HasIndex("UserId", "PropertyId")
+                        .IsUnique();
+
+                    b.ToTable("Favorites");
+                });
+
             modelBuilder.Entity("PropertyHub.DataAccess.Entities.Property", b =>
                 {
                     b.Property<int>("Id")
@@ -206,6 +233,9 @@ namespace PropertyHub.DataAccess.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("YearBuilt")
+                        .HasColumnType("integer");
+
                     b.Property<string>("ZipCode")
                         .IsRequired()
                         .HasColumnType("text");
@@ -214,7 +244,38 @@ namespace PropertyHub.DataAccess.Migrations
 
                     b.HasIndex("AgentId");
 
+                    b.HasIndex("City");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("City", "Status");
+
                     b.ToTable("Properties");
+                });
+
+            modelBuilder.Entity("PropertyHub.DataAccess.Entities.PropertyImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("PropertyId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PropertyId");
+
+                    b.ToTable("PropertyImages");
                 });
 
             modelBuilder.Entity("PropertyHub.DataAccess.Entities.RefreshToken", b =>
@@ -236,7 +297,6 @@ namespace PropertyHub.DataAccess.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("RevokeReason")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("RevokedAt")
@@ -257,6 +317,40 @@ namespace PropertyHub.DataAccess.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("RefreshTokens");
+                });
+
+            modelBuilder.Entity("PropertyHub.DataAccess.Entities.Review", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("PropertyId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("PropertyId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("PropertyHub.DataAccess.Entities.User", b =>
@@ -387,15 +481,45 @@ namespace PropertyHub.DataAccess.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("PropertyHub.DataAccess.Entities.Favorite", b =>
+                {
+                    b.HasOne("PropertyHub.DataAccess.Entities.Property", "Property")
+                        .WithMany()
+                        .HasForeignKey("PropertyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PropertyHub.DataAccess.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Property");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("PropertyHub.DataAccess.Entities.Property", b =>
                 {
                     b.HasOne("PropertyHub.DataAccess.Entities.User", "Agent")
                         .WithMany("Properties")
                         .HasForeignKey("AgentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Agent");
+                });
+
+            modelBuilder.Entity("PropertyHub.DataAccess.Entities.PropertyImage", b =>
+                {
+                    b.HasOne("PropertyHub.DataAccess.Entities.Property", "Property")
+                        .WithMany("Images")
+                        .HasForeignKey("PropertyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Property");
                 });
 
             modelBuilder.Entity("PropertyHub.DataAccess.Entities.RefreshToken", b =>
@@ -407,6 +531,30 @@ namespace PropertyHub.DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PropertyHub.DataAccess.Entities.Review", b =>
+                {
+                    b.HasOne("PropertyHub.DataAccess.Entities.Property", "Property")
+                        .WithMany()
+                        .HasForeignKey("PropertyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PropertyHub.DataAccess.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Property");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PropertyHub.DataAccess.Entities.Property", b =>
+                {
+                    b.Navigation("Images");
                 });
 
             modelBuilder.Entity("PropertyHub.DataAccess.Entities.User", b =>

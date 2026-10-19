@@ -15,10 +15,12 @@ public class Property
     public int Bedrooms { get; set; }
     public int Bathrooms { get; set; }
     public int SquareFeet { get; set; }
+    public int YearBuilt { get; set; }
     public PropertyStatus Status { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     
     public int AgentId { get; set; }
     public User Agent { get; set; }
+    public ICollection<PropertyImage> Images { get; set; }=new List<PropertyImage>();
 }
