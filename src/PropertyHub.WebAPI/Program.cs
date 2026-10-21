@@ -77,7 +77,10 @@ builder.Services.AddScoped<IFavoriteService,FavoriteService>();
 builder.Services.AddScoped<IReviewManager,ReviewManager>();
 builder.Services.AddScoped<IReviewService,ReviewService>();
 builder.Services.AddScoped<ReviewValidator>();
-
+builder.Services.AddScoped<IInquiryManager, InquiryManager>();
+builder.Services.AddScoped<IInquiryService, InquiryService>();
+builder.Services.AddScoped<CreateInquiryValidator>();
+builder.Services.AddScoped<ResponseInquiryValidator>();
 // Add Controllers
 builder.Services.AddControllers();
 
