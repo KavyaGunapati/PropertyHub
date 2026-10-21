@@ -16,6 +16,7 @@ public class AppDbContext : IdentityDbContext<User, IdentityRole<int>, int>
     public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DbSet<Favorite> Favorites {get;set;}
     public DbSet<Review> Reviews{get;set;}
+    public DbSet<Inquiry> Inquiries{get;set;}
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -73,5 +74,23 @@ public class AppDbContext : IdentityDbContext<User, IdentityRole<int>, int>
             .WithMany()
             .HasForeignKey(f=>f.PropertyId)
             .OnDelete(DeleteBehavior.Cascade);
+        builder.Entity<Inquiry>()
+            .HasOne(i => i.Property)
+            .WithMany()
+            .HasForeignKey(i => i.PropertyId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<Inquiry>()
+           .HasOne(i => i.Buyer)
+           .WithMany()
+           .HasForeignKey(i => i.BuyerId)
+           .OnDelete(DeleteBehavior.Restrict);
+        builder.Entity<Inquiry>()
+           .HasIndex(i => new { i.PropertyId, i.Status, i.CreatedAt });
+
+// Supports the buyer's "my inquiries" list
+        builder.Entity<Inquiry>()
+           .HasIndex(i => new { i.BuyerId, i.CreatedAt });
+
     }
 }
