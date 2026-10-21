@@ -1,5 +1,7 @@
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using PropertyHub.DataAccess.Context;
+using PropertyHub.DataAccess.Entities;
 using PropertyHub.DataAccess.Enums;
 using PropertyHub.Interfaces.IManager;
 using PropertyHub.Models.DTOs;
@@ -61,7 +63,60 @@ namespace PropertyHub.Managers
         }
         public async Task<Result<AdminPropertyResponse>> ChangePropertyStatusAsync(int propertyId, PropertyStatus newStatus, CancellationToken cancellationToken = default)
         {
-            
+             var property = await _context.Properties
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.Id == propertyId, cancellationToken);
+
+            if (property == null)
+                return Result<AdminPropertyResponse>.Failure("Property not found");
+            if (newStatus == PropertyStatus.Draft)
+                return Result<AdminPropertyResponse>.Failure("Admins cannot return a property to draft");
+            if (property.Status == newStatus)
+                return Result<AdminPropertyResponse>.Success(await GetDtoAsync(propertyId, cancellationToken));
+
+            if (!IsAllowedTransition(property.Status, newStatus))
+                return Result<AdminPropertyResponse>.Failure($"Cannot change status from {property.Status} to {newStatus}");
+            // Conditional update: only applies if the status is still what we just read.
+            // If an agent or another admin changed it in between, nothing is written.
+            var from=property.Status;
+            var rowsUpdated=await _context.Properties
+            .Where(p=>p.Id==propertyId && p.Status==from)
+            .ExecuteUpdateAsync(s=>s
+            .SetProperty(p=>p.Status,newStatus)
+            .SetProperty(p=>p.UpdatedAt,DateTime.UtcNow),
+            cancellationToken);
+            if (rowsUpdated == 0)
+                return Result<AdminPropertyResponse>.Failure("Property status changed while this request was running. Refresh and try again.");
+            return Result<AdminPropertyResponse>.Success(await GetDtoAsync(propertyId,cancellationToken));
+        }
+        private static bool IsAllowedTransition(PropertyStatus from, PropertyStatus to) => (from, to) switch
+        {
+            (PropertyStatus.Draft,PropertyStatus.Delisted)=>true,
+            (PropertyStatus.Published,PropertyStatus.Delisted)=>true,
+            (PropertyStatus.Delisted,PropertyStatus.Published)=>true,
+            _=>false
+        };
+        private static readonly Expression<Func<Property,AdminPropertyResponse>> ToDto=
+           p=>new AdminPropertyResponse
+           {
+               Id = p.Id,
+               Title = p.Title,
+               City = p.City,
+               Price = p.Price,
+               Status = p.Status,
+               AgentId = p.AgentId,
+               AgentName = p.Agent.UserName,
+               CreatedAt = p.CreatedAt,
+               UpdatedAt = p.UpdatedAt,
+               PublishedAt = p.CreatedAt
+           };
+        private async Task<AdminPropertyResponse> GetDtoAsync(int id, CancellationToken cancellationToken)
+        {
+            return await _context.Properties
+            .AsNoTracking()
+            .Where(p=>p.Id==id)
+            .Select(ToDto)
+            .FirstAsync(cancellationToken);
         }
     }
 }
