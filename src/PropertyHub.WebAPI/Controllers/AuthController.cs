@@ -52,4 +52,13 @@ public class AuthController : ControllerBase
             return BadRequest(new { error = result.Error });
         return Ok(new { message = "Logged out successfully", data = result.Data });
     }
+    [HttpGet("dashboard")]
+    public async Task<IActionResult> GetDashboard(CancellationToken cancellationToken)
+    {
+        var result = await _userService.GetDashboardAsync(cancellationToken);
+        if (!result.IsSuccess)
+            return BadRequest(new {error=result.});
+
+        return Ok(new { data = result.Data });
+    }
 }
