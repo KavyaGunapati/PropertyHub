@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using PropertyHub.Interfaces.IService;
 using PropertyHub.Models.DTOs;
 using Microsoft.AspNetCore.Authorization;
+using PropertyHub.DataAccess.Enums;
 
 namespace PropertyHub.WebAPI.Controllers
 {
@@ -111,6 +112,19 @@ namespace PropertyHub.WebAPI.Controllers
             if (!result.IsSuccess)
                 return BadRequest(new {error=result.Error});
             return Ok(new { message = result.Data });
+        }
+        [Authorize]
+        [HttpGet("mine")]
+        public async Task<IActionResult> GetMine(PropertyStatus? status, int pageNumber = 1,int pageSize = 10,CancellationToken cancellationToken = default)
+        {
+            if (!TryGetUserId(out var agentId))
+                return Unauthorized();
+
+            var result = await _service.GetMineAsync(agentId, status, pageNumber, pageSize, cancellationToken);
+            if (!result.IsSuccess)
+                return BadRequest(new {error=result.Error});
+
+            return Ok(new { data = result.Data });
         }
     }
 }

@@ -2,6 +2,7 @@ using PropertyHub.Interfaces.IManager;
 using PropertyHub.Interfaces.IService;
 using PropertyHub.Models.DTOs;
 using Microsoft.AspNetCore.Http;
+using PropertyHub.DataAccess.Enums;
 namespace PropertyHub.Services
 {
     public class PropertyService:IPropertyService
@@ -61,5 +62,7 @@ namespace PropertyHub.Services
             await _fileUploadManager.DeletePropertyImageAsync(result.Data,cancellationToken);
             return Result<string>.Success("Image deleted successfully");
         } 
+        public Task<Result<List<PropertyResponse>>> GetMineAsync(int agentId, PropertyStatus? status, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+           =>_manager.GetMineAsync(agentId,status,pageNumber,pageSize,cancellationToken);
     }
 }

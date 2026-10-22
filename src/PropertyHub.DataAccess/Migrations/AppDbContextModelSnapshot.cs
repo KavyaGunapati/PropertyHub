@@ -181,6 +181,46 @@ namespace PropertyHub.DataAccess.Migrations
                     b.ToTable("Favorites");
                 });
 
+            modelBuilder.Entity("PropertyHub.DataAccess.Entities.Inquiry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BuyerId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("PropertyId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("RespondedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Response")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BuyerId", "CreatedAt");
+
+                    b.HasIndex("PropertyId", "Status", "CreatedAt");
+
+                    b.ToTable("Inquiries");
+                });
+
             modelBuilder.Entity("PropertyHub.DataAccess.Entities.Property", b =>
                 {
                     b.Property<int>("Id")
@@ -498,6 +538,25 @@ namespace PropertyHub.DataAccess.Migrations
                     b.Navigation("Property");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PropertyHub.DataAccess.Entities.Inquiry", b =>
+                {
+                    b.HasOne("PropertyHub.DataAccess.Entities.User", "Buyer")
+                        .WithMany()
+                        .HasForeignKey("BuyerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PropertyHub.DataAccess.Entities.Property", "Property")
+                        .WithMany()
+                        .HasForeignKey("PropertyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Buyer");
+
+                    b.Navigation("Property");
                 });
 
             modelBuilder.Entity("PropertyHub.DataAccess.Entities.Property", b =>

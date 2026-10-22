@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using PropertyHub.DataAccess.Context;
 using PropertyHub.DataAccess.Entities;
@@ -13,6 +14,7 @@ namespace PropertyHub.Managers
         private readonly AppDbContext _context;
         private readonly PropertyValidator _propertyValidator;
         private readonly IFileUploadManager _fileManager;
+        private const int MaxPageSize=30;
         public PropertyManager(AppDbContext context, PropertyValidator validator,IFileUploadManager fileManager)
         {
             _context=context;
@@ -268,6 +270,29 @@ namespace PropertyHub.Managers
             _context.PropertyImages.Remove(image);
             await _context.SaveChangesAsync(cancellationToken);
             return Result<string>.Success(filename);
+        }
+        public async Task<Result<List<PropertyResponse>>> GetMineAsync(int agentId, PropertyStatus? status, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+        {
+            if (pageNumber < 1)
+            {
+                return Result<List<PropertyResponse>>.Failure("Page number should be greater than or equal to 1");
+            }
+            pageSize=Math.Clamp(pageSize,1,MaxPageSize);
+            var query= _context.Properties.AsNoTracking().Where(p=>p.Id==agentId);
+            if (status.HasValue)
+            {
+                query=query.Where(p=>p.Status==status.Value);
+            }
+            var properties=await query
+                           .Include(p=>p.Agent)
+                           .Include(p=>p.Images.OrderBy(i=>i.DisplayOrder))
+                           .OrderByDescending(p=>p.CreatedAt)
+                           .ThenBy(p=>p.Id)
+                           .Skip((pageNumber-1)*pageSize)
+                           .Take(pageNumber)
+                           .ToListAsync(cancellationToken);
+            return Result<List<PropertyResponse>>.Success(properties.Select(p=>MapToResponse(p,p.Agent.UserName)).ToList());
+
         }
         private PropertyResponse MapToResponse(Property property, string agentName)
         {

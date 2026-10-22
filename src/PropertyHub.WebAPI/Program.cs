@@ -81,6 +81,8 @@ builder.Services.AddScoped<IInquiryManager, InquiryManager>();
 builder.Services.AddScoped<IInquiryService, InquiryService>();
 builder.Services.AddScoped<CreateInquiryValidator>();
 builder.Services.AddScoped<ResponseInquiryValidator>();
+builder.Services.AddScoped<IAdminManager,AdminManager>();
+builder.Services.AddScoped<IAdminService,AdminService>();
 // Add Controllers
 builder.Services.AddControllers();
 

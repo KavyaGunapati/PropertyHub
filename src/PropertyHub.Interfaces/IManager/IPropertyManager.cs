@@ -1,3 +1,4 @@
+using PropertyHub.DataAccess.Enums;
 using PropertyHub.Models.DTOs;
 namespace PropertyHub.Interfaces.IManager
 {
@@ -11,6 +12,7 @@ namespace PropertyHub.Interfaces.IManager
         Task<Result<PropertyResponse>> PublishPropertyAsync(int propertyId, int agentId, CancellationToken cancellationToken=default);
         Task<Result<string>> EnsureCanAddImageAsync(int propertyId, int agentId, CancellationToken cancellationToken = default);
         Task<Result<PropertyImageResponse>> AddImageAsync(int propertyId, string imageUrl, CancellationToken cancellationToken = default);
+        Task<Result<List<PropertyResponse>>> GetMineAsync(int agentId, PropertyStatus? status, int pageNumber, int pageSize, CancellationToken cancellationToken = default);
         Task<Result<string>> DeleteImageAsync(int imageId, int agentId, CancellationToken cancellationToken = default); // returns the file name to delete
     }
 }
