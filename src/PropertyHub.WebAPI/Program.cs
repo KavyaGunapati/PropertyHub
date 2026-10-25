@@ -13,9 +13,16 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
+using PropertyHub.WebAPI.Middlewares;
+using Serilog;
 
+Log.Logger=new LoggerConfiguration()
+.ReadFrom.Configuration(
+    new ConfigurationBuilder().AddJsonFile("appsettings.json")
+    .Build()
+).CreateLogger();
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Host.UseSerilog();
 // Add DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -63,6 +70,7 @@ builder.Services
     });
 
 // Register services
+builder.Services.AddAutoMapper(cfg => cfg.AddProfile<PropertyHub.WebAPI.Profiles.MappingProfile>());
 builder.Services.AddScoped<IAppUserService, AppUserService>();
 builder.Services.AddScoped<IAppUserManager, AppUserManager>();
 builder.Services.AddScoped<RegisterValidator>();
@@ -85,7 +93,8 @@ builder.Services.AddScoped<IAdminManager,AdminManager>();
 builder.Services.AddScoped<IAdminService,AdminService>();
 // Add Controllers
 builder.Services.AddControllers();
-
+builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<ICacheService,CacheService>();
 // Add Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -112,7 +121,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
-
+Log.Information("PropertyHub API Started");
 // Enable Swagger in Development
 if (app.Environment.IsDevelopment())
 {
@@ -129,6 +138,7 @@ if (!Directory.Exists(uploadPath))
 {
     Directory.CreateDirectory(uploadPath);
 }
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
