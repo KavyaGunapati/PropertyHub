@@ -1,6 +1,7 @@
 namespace PropertyHub.WebAPI.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using PropertyHub.Interfaces.IService;
 using PropertyHub.Models.DTOs;
 
@@ -25,7 +26,7 @@ public class AuthController : ControllerBase
 
         return Ok(new { message = "Registration successful", data = result.Data });
     }
-
+    [EnableRateLimiting("LoginPolicy")]
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
     {

@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 using PropertyHub.WebAPI.Middlewares;
 using Serilog;
+using Microsoft.AspNetCore.RateLimiting;
 
 Log.Logger=new LoggerConfiguration()
 .ReadFrom.Configuration(
@@ -119,6 +120,15 @@ builder.Services.AddSwaggerGen(c =>
         [new OpenApiSecuritySchemeReference("Bearer", document)] = new List<string>()
     });
 });
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("LoginPolicy", configure =>
+    {
+        configure.PermitLimit=5;
+        configure.Window=TimeSpan.FromMinutes(1);
+        configure.QueueLimit=0;
+    });
+});
 
 var app = builder.Build();
 Log.Information("PropertyHub API Started");
@@ -138,6 +148,7 @@ if (!Directory.Exists(uploadPath))
 {
     Directory.CreateDirectory(uploadPath);
 }
+app.UseRateLimiter();
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthentication();
